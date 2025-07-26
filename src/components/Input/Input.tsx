@@ -1,12 +1,16 @@
-import { useRef, useState, type InputHTMLAttributes } from 'react';
+import { useRef, type InputHTMLAttributes } from 'react';
 import { ClearButton, InputWrapper, StyledInput } from './styles';
 
-const Input = (props: InputHTMLAttributes<HTMLInputElement>) => {
-    const [value, setValue] = useState('');
+interface InputProps {
+    inputValue: string;
+    setInputValue: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const Input = (props: InputProps & InputHTMLAttributes<HTMLInputElement>) => {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const clearInput = () => {
-        setValue('');
+        props.setInputValue('');
         inputRef.current?.focus();
     };
 
@@ -14,11 +18,11 @@ const Input = (props: InputHTMLAttributes<HTMLInputElement>) => {
         <InputWrapper>
             <StyledInput
                 ref={inputRef}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
+                value={props.inputValue}
+                onChange={(e) => props.setInputValue(e.target.value)}
                 {...props}
             />
-            <ClearButton $visible={!!value} onClick={clearInput} />
+            <ClearButton $visible={!!props.inputValue} onClick={clearInput} />
         </InputWrapper>
     );
 };

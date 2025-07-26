@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { Button } from '../../styled-components/Button';
 import { Flex } from '../../styled-components/Flex';
 import Input from '../Input/Input';
@@ -14,11 +14,7 @@ const TaskInputBlock = () => {
         setInputValue('');
     };
 
-    const inputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.target.value);
-    };
-
-    const inputKeyDownHandler = (e: KeyboardEvent) => {
+    const inputKeyDownHandler = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             return addTaskHandler();
         }
@@ -29,9 +25,9 @@ const TaskInputBlock = () => {
             <Input
                 placeholder="Add a task"
                 type="text"
-                value={inputValue}
-                onChange={inputChangeHandler}
-                onKeyDown={(e) => e.key === 'Enter' && addTaskHandler()}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                onKeyDown={inputKeyDownHandler}
             />
             <Button $size="medium" onClick={addTaskHandler}>
                 Add
