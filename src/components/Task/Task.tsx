@@ -1,9 +1,11 @@
 import type { FC } from 'react';
 import styled from 'styled-components';
+import GrabbleZone from '../GrabableZone/GrabbleZone';
+import DeleteTask from '../DeleteTask/DeleteTask';
 
 const StyledTask = styled.div`
     position: relative;
-    padding: 10px 10px 10px 30px;
+    padding: 5px 10px 15px 30px;
     width: 100%;
 
     border-radius: 8px;
@@ -19,7 +21,13 @@ interface TaskProps {
 }
 
 const Task: FC<TaskProps> = ({ children }) => {
-    return <StyledTask>{children}</StyledTask>;
+    return (
+        <StyledTask>
+            <GrabbleZone />
+            {children}
+            <DeleteTask />
+        </StyledTask>
+    );
 };
 
 export default Task;

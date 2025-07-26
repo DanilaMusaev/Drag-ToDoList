@@ -13,18 +13,17 @@ const StyledDotsIcon = styled(IconWrapper).attrs({
     viewBox: '0 0 21 34',
 })`
     ellipse {
-        fill: ${(p) => p.color};
+        fill: ${(p) => p.color || p.theme.colors.primaryTextColor};
         transition: transform 0.2s ease;
     }
 
-    &:hover ellipse {
-        transform: scale(1.1);
+    &:hover {
+        cursor: grab;
     }
 `;
 
 export const DotsIcon: React.FC<DotsIconProps> = ({
-    size = 21,
-    color = '#111827',
+    size = 19,
     className,
     onClick,
 }) => {
@@ -34,18 +33,17 @@ export const DotsIcon: React.FC<DotsIconProps> = ({
         <StyledDotsIcon
             $size={size}
             height={height}
-            color={color}
             className={`dots-icon ${className}`}
             onClick={onClick}
             $clickable={!!onClick}
             aria-label="Drag handle"
         >
-            <ellipse cx="3.97288" cy="4" rx="3.97288" ry="4" />
-            <ellipse cx="16.8847" cy="4" rx="3.97288" ry="4" />
-            <ellipse cx="3.97288" cy="17" rx="3.97288" ry="4" />
-            <ellipse cx="16.8847" cy="17" rx="3.97288" ry="4" />
-            <ellipse cx="3.97288" cy="30" rx="3.97288" ry="4" />
-            <ellipse cx="16.8847" cy="30" rx="3.97288" ry="4" />
+            <ellipse cx="4" cy="4" rx="4" ry="4" />
+            <ellipse cx="17" cy="4" rx="4" ry="4" />
+            <ellipse cx="4" cy="17" rx="4" ry="4" />
+            <ellipse cx="17" cy="17" rx="4" ry="4" />
+            <ellipse cx="4" cy="30" rx="4" ry="4" />
+            <ellipse cx="17" cy="30" rx="4" ry="4" />
         </StyledDotsIcon>
     );
 };

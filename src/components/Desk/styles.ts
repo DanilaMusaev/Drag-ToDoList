@@ -6,7 +6,7 @@ interface StyledDeskProps {
 }
 
 export const StyledDesk = styled.div<StyledDeskProps>`
-    padding: 10px 25px;
+    padding: 10px 15px;
     width: ${(props) => props.$widthPercent || '100%'};
 
     border-radius: 25px;

@@ -11,8 +11,4 @@ export const IconWrapper = styled.svg<IconWrapperProps>`
     cursor: ${(p) => (p.$clickable ? 'pointer' : 'inherit')};
     outline: none;
     transition: all 0.2s ease;
-
-    &:hover {
-        transform: ${(p) => (p.$clickable ? 'scale(1.05)' : 'none')};
-    }
 `;
