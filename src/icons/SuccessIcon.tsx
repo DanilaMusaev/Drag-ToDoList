@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { IconWrapper } from '../styles/icon-styles';
 
 interface SuccessIconProps {
@@ -14,9 +14,23 @@ interface StyledSuccessIconProps {
     $fillColor?: string;
 }
 
+const ManifestAnimation = keyframes`
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+`;
+
 const StyledSuccessIcon = styled(IconWrapper).attrs({
     viewBox: '0 0 38 38',
 })<StyledSuccessIconProps>`
+    transform: scale(0.7);
+    opacity: 0;
+    animation: ${ManifestAnimation} 0.5s ease-out 0.8s forwards;
     circle {
         fill: ${(p) => p.$circleColor || p.theme.colors.successColor};
     }
@@ -27,7 +41,7 @@ const StyledSuccessIcon = styled(IconWrapper).attrs({
 `;
 
 export const SuccessIcon: React.FC<SuccessIconProps> = ({
-    size = 24,
+    size = 22,
     circleColor,
     fillColor,
     className,
@@ -41,7 +55,7 @@ export const SuccessIcon: React.FC<SuccessIconProps> = ({
             aria-hidden="true"
         >
             <circle cx="19" cy="19" r="19" />
-            <path d="M26.3174 4.86692C26.697 5.25545 26.697 5.8759 26.3175 6.26444L9.70888 23.2677C9.31656 23.6693 8.67053 23.6693 8.27819 23.2677L1.68261 16.5161C1.30306 16.1275 1.30305 15.5071 1.68259 15.1185L1.78104 15.0177C2.17338 14.6161 2.81941 14.6161 3.21174 15.0177L8.24467 20.1701C8.63701 20.5717 9.28304 20.5717 9.67537 20.1701L24.7553 4.73233C25.1476 4.33068 25.7936 4.33068 26.186 4.73233C26.2298 4.77719 26.2736 4.82206 26.3174 4.86692Z" />
+            <path d="M31.3174 9.86692C31.697 10.2555 31.697 10.8759 31.3175 11.2644L14.7089 28.2677C14.3166 28.6693 13.6705 28.6693 13.2782 28.2677L6.68261 21.5161C6.30306 21.1275 6.30305 20.5071 6.68259 20.1185L6.78104 20.0177C7.17338 19.6161 7.81941 19.6161 8.21174 20.0177L13.2447 25.1701C13.637 25.5717 14.283 25.5717 14.6754 25.1701L29.7553 9.73233C30.1476 9.33068 30.7936 9.33068 31.186 9.73233C31.2298 9.77719 31.2736 9.82206 31.3174 9.86692Z" />
         </StyledSuccessIcon>
     );
 };

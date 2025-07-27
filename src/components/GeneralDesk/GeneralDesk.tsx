@@ -50,6 +50,7 @@ const GeneralDesk: FC = () => {
                                 key={task.id}
                                 id={task.id}
                                 onDelete={deleteTask}
+                                taskStatus={task.status}
                             >
                                 {task.text}
                             </Task>

@@ -25,8 +25,8 @@ const TaskInputBlock = () => {
             <Input
                 placeholder="Add a task"
                 type="text"
-                inputValue={inputValue}
-                setInputValue={setInputValue}
+                $inputValue={inputValue}
+                $setInputValue={setInputValue}
                 onKeyDown={inputKeyDownHandler}
             />
             <Button $size="medium" onClick={addTaskHandler}>
