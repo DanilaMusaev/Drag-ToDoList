@@ -45,6 +45,7 @@ const GeneralDesk: FC = () => {
                 >
                     {tasks
                         .filter((task) => task.status === status)
+                        .sort((a, b) => a.position - b.position)
                         .map((task) => (
                             <Task
                                 key={task.id}

@@ -10,7 +10,7 @@ interface DeskProps {
     children?: React.ReactNode;
     deskTitle: string;
     status: MyTask['status'];
-    onTaskDrop: (taskId: string, newStatus: MyTask['status']) => void;
+    onTaskDrop: (taskId: string, newStatus: MyTask['status'], newPosition?: number) => void;
 }
 
 const Desk: FC<DeskProps> = ({
@@ -24,7 +24,36 @@ const Desk: FC<DeskProps> = ({
     const dropRef = useRef<HTMLDivElement>(null);
     const [{ isOver }, drop] = useDrop(() => ({
         accept: 'TASK',
-        drop: (item: { id: string }) => onTaskDrop(item.id, status),
+        drop: (item: { id: string }, monitor) => {
+            const dropOffset = monitor.getClientOffset();
+            if (!dropOffset || !dropRef.current) return;
+            // Границы доски
+            const descRect = dropRef.current.getBoundingClientRect();
+            const isOutsideCurrentDesk = !monitor.isOver({
+                shallow: true
+            });
+            if (isOutsideCurrentDesk) return;
+            // Относительное положение Y курсора в доске
+            const cursorY = dropOffset.y - descRect.top;
+            const taskElements = dropRef.current.querySelectorAll('.task');
+            let newTaskPos;
+            if (taskElements.length === 0) {
+                newTaskPos = 0;
+            } else {
+                newTaskPos = taskElements.length - 1;
+            }
+            // Переопределение позиции в зависимости от положения курсора
+            for (let i = 0; i < taskElements.length; i++) {
+                const taskRect = taskElements[i].getBoundingClientRect();
+                // Середина задачи в отношении с верхней границей доски
+                const taskMiddY = taskRect.top - descRect.top + taskRect.height / 2;
+                if (cursorY < taskMiddY) {
+                    newTaskPos = i;
+                    break;
+                }
+            } 
+            onTaskDrop(item.id, status, newTaskPos);
+        },
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
         }),

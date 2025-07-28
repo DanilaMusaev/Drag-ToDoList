@@ -50,7 +50,7 @@ const Task: FC<TaskProps> = ({ children, id, onDelete, taskStatus }) => {
     dragPreview(previewRef);
 
     return (
-        <div ref={previewRef}>
+        <div className='task' ref={previewRef}>
             <StyledTask className={`${isDragging ? 'dragging' : ''}`}>
                 <div ref={dragRef}>
                     <GrabbleZone $taskStatus={taskStatus} />
