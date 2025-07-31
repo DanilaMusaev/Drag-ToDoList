@@ -1,4 +1,4 @@
-import { useRef, type FC } from 'react';
+import { useRef, useState, type FC } from 'react';
 import { StyledDesk, StyledDeskTitle } from './styles';
 import { useDrop } from 'react-dnd';
 import { type MyTask } from '../../models/MyTask';
@@ -10,7 +10,17 @@ interface DeskProps {
     children?: React.ReactNode;
     deskTitle: string;
     status: MyTask['status'];
-    onTaskDrop: (taskId: string, newStatus: MyTask['status'], newPosition?: number) => void;
+    onTaskDrop: (
+        taskId: string,
+        newStatus: MyTask['status'],
+        newPosition?: number
+    ) => void;
+    onTaskHover?: (
+        taskId: string,
+        status: MyTask['status'],
+        position: number
+    ) => void;
+    placeholderIndex?: number | null;
 }
 
 const Desk: FC<DeskProps> = ({
@@ -20,36 +30,40 @@ const Desk: FC<DeskProps> = ({
     deskTitle,
     status,
     onTaskDrop,
+    onTaskHover,
+    placeholderIndex = null,
 }) => {
     const dropRef = useRef<HTMLDivElement>(null);
+
     const [{ isOver }, drop] = useDrop(() => ({
         accept: 'TASK',
-        drop: (item: { id: string }, monitor) => {
+        hover: (item: { id: string }, monitor) => {
+            if (!dropRef.current || !onTaskHover) return;
+
             const dropOffset = monitor.getClientOffset();
-            if (!dropOffset || !dropRef.current) return;
-            // Границы доски
+            if (!dropOffset) return;
+
             const descRect = dropRef.current.getBoundingClientRect();
-            // Проверка на то, находимся ли мы еще внутри доски
-            const isOutsideCurrentDesk = !monitor.isOver({
-                shallow: true
-            });
-            if (isOutsideCurrentDesk) return;
-            // Относительное положение Y курсора в доске
             const cursorY = dropOffset.y - descRect.top;
             const taskElements = dropRef.current.querySelectorAll('.task');
-            let newTaskPos = taskElements.length;
-            // Переопределение позиции в зависимости от положения курсора
+
+            let newPlaceholderIndex = taskElements.length;
+
             for (let i = 0; i < taskElements.length; i++) {
                 const taskRect = taskElements[i].getBoundingClientRect();
-                // Середина задачи в отношении с верхней границей доски
-                const taskMiddY = taskRect.top - descRect.top + taskRect.height / 2;
-                if (cursorY < taskMiddY) {
-                    newTaskPos = i;
+                const taskMiddleY =
+                    taskRect.top - descRect.top + taskRect.height / 2;
+
+                if (cursorY < taskMiddleY) {
+                    newPlaceholderIndex = i;
                     break;
                 }
-            } 
-            console.log(`DROP position: ` + newTaskPos)
-            onTaskDrop(item.id, status, newTaskPos);
+            }
+
+            onTaskHover(item.id, status, newPlaceholderIndex);
+        },
+        drop: (item: { id: string }, monitor) => {
+            onTaskDrop(item.id, status, placeholderIndex ?? undefined);
         },
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
