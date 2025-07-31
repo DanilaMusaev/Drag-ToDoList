@@ -10,6 +10,7 @@ export const FilterTab = styled.div`
     font-size: 14px;
     color: ${({ theme }) => theme.colors.primaryTextColor};
 
+    user-select: none;
     cursor: pointer;
     transition: 0.15s ease-out;
 

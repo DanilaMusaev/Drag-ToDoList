@@ -1,4 +1,4 @@
-import { useRef, type FC } from 'react';
+import { useRef, useState, type FC } from 'react';
 import styled from 'styled-components';
 import GrabbleZone from '../GrabableZone/GrabbleZone';
 import DeleteTask from '../DeleteTask/DeleteTask';
@@ -20,11 +20,17 @@ const StyledTask = styled.div`
     user-select: none;
     color: ${({ theme }) => theme.colors.primaryTextColor};
 
-    transition: transform 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+    &:not(.dragging) {
+        transition: transform 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+    }
 
     &.dragging {
-        opacity: 0.5;
-        transform: scale(0.98);
+        opacity: .6;
+    }
+
+    &.deleted {
+        transform: scale(0) rotate(15deg);
+        opacity: 0;
     }
 `;
 
@@ -36,9 +42,11 @@ interface TaskProps {
 }
 
 const Task: FC<TaskProps> = ({ children, id, onDelete, taskStatus }) => {
-    const previewRef = useRef<HTMLDivElement>(null);
+    const [deleted, setDeleted] = useState(false);
     const dragRef = useRef<HTMLDivElement>(null);
-    const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
+    const previewRef = useRef<HTMLDivElement>(null);
+
+    const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: 'TASK',
         item: { id },
         collect: (monitor) => ({
@@ -47,17 +55,24 @@ const Task: FC<TaskProps> = ({ children, id, onDelete, taskStatus }) => {
     }));
     // Связывание ссылок
     drag(dragRef);
-    dragPreview(previewRef);
+    preview(previewRef);
+
+    const deleteTaskHandler = (id: string) => {
+        setDeleted(true);
+        setTimeout(() => {
+            onDelete(id);
+        }, 300);
+    }
 
     return (
         <div className='task' ref={previewRef}>
-            <StyledTask className={`${isDragging ? 'dragging' : ''}`}>
+            <StyledTask className={`${isDragging ? 'dragging' : ''} ${deleted ? 'deleted' : ''}`}>
                 <div ref={dragRef}>
                     <GrabbleZone $taskStatus={taskStatus} />
                     {taskStatus === 'done' && <DoneTaskIcon />}
                 </div>
                 {children}
-                <DeleteTask id={id} onClick={(id) => onDelete(id)} />
+                <DeleteTask id={id} onClick={(id) => deleteTaskHandler(id)} />
             </StyledTask>
         </div>
     );

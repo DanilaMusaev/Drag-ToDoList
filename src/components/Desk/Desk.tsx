@@ -29,6 +29,7 @@ const Desk: FC<DeskProps> = ({
             if (!dropOffset || !dropRef.current) return;
             // Границы доски
             const descRect = dropRef.current.getBoundingClientRect();
+            // Проверка на то, находимся ли мы еще внутри доски
             const isOutsideCurrentDesk = !monitor.isOver({
                 shallow: true
             });
@@ -36,12 +37,7 @@ const Desk: FC<DeskProps> = ({
             // Относительное положение Y курсора в доске
             const cursorY = dropOffset.y - descRect.top;
             const taskElements = dropRef.current.querySelectorAll('.task');
-            let newTaskPos;
-            if (taskElements.length === 0) {
-                newTaskPos = 0;
-            } else {
-                newTaskPos = taskElements.length - 1;
-            }
+            let newTaskPos = taskElements.length;
             // Переопределение позиции в зависимости от положения курсора
             for (let i = 0; i < taskElements.length; i++) {
                 const taskRect = taskElements[i].getBoundingClientRect();
@@ -52,6 +48,7 @@ const Desk: FC<DeskProps> = ({
                     break;
                 }
             } 
+            console.log(`DROP position: ` + newTaskPos)
             onTaskDrop(item.id, status, newTaskPos);
         },
         collect: (monitor) => ({
