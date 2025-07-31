@@ -37,14 +37,13 @@ const useTasks = () => {
                 const tasksInNewStatus = prev.filter(
                     (t) => t.status === newStatus
                 );
-                const targetPosition = Math.min(
+                const targetPosition =
                     newPosition !== undefined
-                        ? newPosition
-                        : tasksInNewStatus.length,
-                    tasksInNewStatus.length
-                );
+                        ? Math.min(newPosition, tasksInNewStatus.length)
+                        : tasksInNewStatus.length;
 
                 return prev.map((task) => {
+                    // 1. Перемещаемая задача
                     if (task.id === id) {
                         return {
                             ...task,
@@ -52,6 +51,8 @@ const useTasks = () => {
                             position: targetPosition,
                         };
                     }
+
+                    // 2. Корректировка в исходной доске
                     if (
                         task.status === taskToMove.status &&
                         task.status !== newStatus
@@ -64,8 +65,11 @@ const useTasks = () => {
                                     : task.position,
                         };
                     }
+
+                    // 3. Корректировка в целевой доске
                     if (task.status === newStatus) {
                         if (taskToMove.status === newStatus) {
+                            // Перемещение внутри одной доски
                             if (taskToMove.position < targetPosition) {
                                 if (
                                     task.position > taskToMove.position &&
@@ -88,11 +92,13 @@ const useTasks = () => {
                                 }
                             }
                         } else {
+                            // Перемещение из другой доски
                             if (task.position >= targetPosition) {
                                 return { ...task, position: task.position + 1 };
                             }
                         }
                     }
+
                     return task;
                 });
             });
@@ -101,7 +107,6 @@ const useTasks = () => {
     );
 
     const deleteTask = useCallback((id: string) => {
-        // setTasks((prev) => prev.filter((task) => task.id !== id));
         setTasks((prev) => {
             const deletedTask = prev.find((tsk) => tsk.id === id);
             if (!deletedTask) return prev;

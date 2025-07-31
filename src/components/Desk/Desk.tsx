@@ -1,8 +1,9 @@
-import { useRef, type FC } from 'react';
+import { createContext, useCallback, useRef, useState, type FC } from 'react';
 import { StyledDesk, StyledDeskTitle } from './styles';
 import { useDrop } from 'react-dnd';
 import { type MyTask } from '../../models/MyTask';
 import { Flex } from '../../styled-components/Flex';
+import React from 'react';
 
 interface DeskProps {
     widthPercent: '20%' | '25%' | '33.3333%' | '50%' | '100%';
@@ -10,8 +11,15 @@ interface DeskProps {
     children?: React.ReactNode;
     deskTitle: string;
     status: MyTask['status'];
-    onTaskDrop: (taskId: string, newStatus: MyTask['status'], newPosition?: number) => void;
+    onTaskDrop: (
+        taskId: string,
+        newStatus: MyTask['status'],
+        newPosition?: number
+    ) => void;
 }
+
+// Контекст, для пробрасывания значения isOver в children
+const IsOverContext = createContext<{isOver?: boolean}>({});
 
 const Desk: FC<DeskProps> = ({
     children,
@@ -21,41 +29,49 @@ const Desk: FC<DeskProps> = ({
     status,
     onTaskDrop,
 }) => {
+    const [hoverIndex, setHoverIndex] = useState<number | null>(null);
     const dropRef = useRef<HTMLDivElement>(null);
+    const hoverIndexRef = useRef<number | null>(null);
+
     const [{ isOver }, drop] = useDrop(() => ({
         accept: 'TASK',
-        drop: (item: { id: string }, monitor) => {
-            const dropOffset = monitor.getClientOffset();
-            if (!dropOffset || !dropRef.current) return;
-            // Границы доски
-            const descRect = dropRef.current.getBoundingClientRect();
-            const isOutsideCurrentDesk = !monitor.isOver({
-                shallow: true
-            });
-            if (isOutsideCurrentDesk) return;
-            // Относительное положение Y курсора в доске
-            const cursorY = dropOffset.y - descRect.top;
-            const taskElements = dropRef.current.querySelectorAll('.task');
-            let newTaskPos;
-            if (taskElements.length === 0) {
-                newTaskPos = 0;
-            } else {
-                newTaskPos = taskElements.length - 1;
-            }
-            // Переопределение позиции в зависимости от положения курсора
-            for (let i = 0; i < taskElements.length; i++) {
-                const taskRect = taskElements[i].getBoundingClientRect();
-                // Середина задачи в отношении с верхней границей доски
-                const taskMiddY = taskRect.top - descRect.top + taskRect.height / 2;
-                if (cursorY < taskMiddY) {
-                    newTaskPos = i;
+        hover: (item: { id: string }, monitor) => {
+            if (!dropRef.current) return;
+
+            const offset = monitor.getClientOffset();
+            if (!offset) return;
+
+            const { top } = dropRef.current.getBoundingClientRect();
+            const cursorY = offset.y - top;
+            const tasks = Array.from(dropRef.current.querySelectorAll('.task'));
+
+            let newHoverIndex = tasks.length;
+
+            for (let i = 0; i < tasks.length; i++) {
+                const task = tasks[i];
+                const taskRect = task.getBoundingClientRect();
+                const taskBottom = taskRect.top - top + taskRect.height;
+
+                if (cursorY < taskBottom) {
+                    newHoverIndex = i;
                     break;
                 }
-            } 
-            onTaskDrop(item.id, status, newTaskPos);
+            }
+
+            if (hoverIndexRef.current !== newHoverIndex) {
+                hoverIndexRef.current = newHoverIndex;
+                setHoverIndex(newHoverIndex);
+            }
+        },
+        drop: (item: { id: string }, monitor) => {
+            const finalPosition = hoverIndexRef.current ?? 0; // Гарантируем минимум 0
+            console.log('Dropping at position:', finalPosition);
+            onTaskDrop(item.id, status, finalPosition);
+            hoverIndexRef.current = null;
+            setHoverIndex(null);
         },
         collect: (monitor) => ({
-            isOver: !!monitor.isOver(),
+            isOver: monitor.isOver(),
         }),
     }));
     // Связываем ссылку dropRef с drop
@@ -72,8 +88,10 @@ const Desk: FC<DeskProps> = ({
             }}
         >
             <StyledDeskTitle>{deskTitle}</StyledDeskTitle>
-            <Flex $direction="column" $gap="10px">
-                {children}
+            <Flex $direction="column">
+                <IsOverContext.Provider value={{isOver: isOver && hoverIndex === index}}>
+                    {children}
+                </IsOverContext.Provider>
             </Flex>
         </StyledDesk>
     );
