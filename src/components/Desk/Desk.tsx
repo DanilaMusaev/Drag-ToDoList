@@ -1,4 +1,4 @@
-import { useRef, useState, type FC } from 'react';
+import { useRef, type FC } from 'react';
 import { StyledDesk, StyledDeskTitle } from './styles';
 import { useDrop } from 'react-dnd';
 import { type MyTask } from '../../models/MyTask';
@@ -59,10 +59,11 @@ const Desk: FC<DeskProps> = ({
                     break;
                 }
             }
-
+            console.log(`HOVER position: ${newPlaceholderIndex}`);
             onTaskHover(item.id, status, newPlaceholderIndex);
         },
-        drop: (item: { id: string }, monitor) => {
+        drop: (item: { id: string }) => {
+            console.log(`DROP position: ${placeholderIndex}`);
             onTaskDrop(item.id, status, placeholderIndex ?? undefined);
         },
         collect: (monitor) => ({
