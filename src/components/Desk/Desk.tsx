@@ -16,11 +16,9 @@ interface DeskProps {
         newPosition?: number
     ) => void;
     onTaskHover?: (
-        taskId: string,
         status: MyTask['status'],
         position: number
     ) => void;
-    placeholderIndex?: number | null;
 }
 
 const Desk: FC<DeskProps> = ({
@@ -31,9 +29,9 @@ const Desk: FC<DeskProps> = ({
     status,
     onTaskDrop,
     onTaskHover,
-    placeholderIndex = null,
 }) => {
     const dropRef = useRef<HTMLDivElement>(null);
+    const lastPositionRef = useRef<number | null>(null);
 
     const [{ isOver }, drop] = useDrop(() => ({
         accept: 'TASK',
@@ -60,11 +58,12 @@ const Desk: FC<DeskProps> = ({
                 }
             }
             console.log(`HOVER position: ${newPlaceholderIndex}`);
-            onTaskHover(item.id, status, newPlaceholderIndex);
+            lastPositionRef.current = newPlaceholderIndex;
+            onTaskHover(status, newPlaceholderIndex);
         },
         drop: (item: { id: string }) => {
-            console.log(`DROP position: ${placeholderIndex}`);
-            onTaskDrop(item.id, status, placeholderIndex ?? undefined);
+            console.log(`DROP position: ${lastPositionRef.current}`);
+            onTaskDrop(item.id, status, lastPositionRef.current ?? undefined);
         },
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
@@ -80,7 +79,6 @@ const Desk: FC<DeskProps> = ({
             ref={dropRef}
             style={{
                 backgroundColor: isOver ? 'rgba(0,0,0,0.05)' : undefined,
-                transition: 'background-color 0.15s ease-out',
             }}
         >
             <StyledDeskTitle>{deskTitle}</StyledDeskTitle>

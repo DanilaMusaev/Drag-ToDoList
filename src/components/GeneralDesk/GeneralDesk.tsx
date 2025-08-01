@@ -20,7 +20,7 @@ const GeneralDesk: FC = () => {
     } | null>(null);
 
     const handlerTaskHover = useCallback(
-        (taskId: string, status: MyTask['status'], position: number) => {
+        (status: MyTask['status'], position: number) => {
             setHoverState({ status, position });
         },
         []
@@ -31,7 +31,7 @@ const GeneralDesk: FC = () => {
             moveTask(taskId, newStatus, newPosition);
             setHoverState(null);
         },
-        []
+        [hoverState, moveTask]
     );
     // Доски
     const statusConfig: DeskConfig[] = [
@@ -57,9 +57,6 @@ const GeneralDesk: FC = () => {
                         status={status}
                         onTaskDrop={handleTaskDrop}
                         onTaskHover={handlerTaskHover}
-                        placeholderIndex={
-                            showPlaceholder ? placeHolderPos : null
-                        }
                     >
                         {filteredTasks.flatMap((task, index) => [
                             showPlaceholder && placeHolderPos === index && (

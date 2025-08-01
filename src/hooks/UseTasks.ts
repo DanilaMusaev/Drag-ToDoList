@@ -31,6 +31,7 @@ const useTasks = () => {
     const moveTask = useCallback(
         (id: string, newStatus: MyTask['status'], newPosition?: number) => {
             setTasks((prev) => {
+                console.log(`MOVETASK. New position: ${newPosition}`);
                 const taskToMove = prev.find((t) => t.id === id);
                 if (!taskToMove) return prev;
 

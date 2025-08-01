@@ -14,6 +14,8 @@ export const StyledDesk = styled.div<StyledDeskProps>`
         $background === 'dark'
             ? theme.colors.bgColorDarken
             : theme.colors.mainBgColor};
+    
+    transition: all 0.15s ease;
 `;
 
 export const StyledDeskTitle = styled.h3`

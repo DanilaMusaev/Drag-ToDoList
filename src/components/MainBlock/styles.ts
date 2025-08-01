@@ -8,6 +8,8 @@ export const StyledMainBlock = styled.div`
     border-radius: 25px;
     box-shadow: 0 0 20px 8px rgba(0, 0, 0, 0.1);
     background: ${({ theme }) => theme.colors.todoListBg};
+    
+    transition: all 0.15s ease;
 `;
 
 export const MainTitle = styled.h1`
