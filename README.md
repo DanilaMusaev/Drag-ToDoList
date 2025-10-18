@@ -2,4 +2,4 @@
 
 This is an common ToDo List with able to drag move your task right in the todos desk. No backend, all stored in LocalStorage. Noting More.
 
-Right now in Development. Almost done.
+Right now in Development. Almost done. If I'm not lazy, I'll finish the project soon (hopefully)
